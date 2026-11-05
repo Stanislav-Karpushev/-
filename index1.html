@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Люблю тебя, Алёна</title>
+    
+    <!-- Шрифты: Marck Script для заголовка, Caveat для подписей -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Marck+Script&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; font-family: 'Caveat', cursive; background: #0a0a0a; overflow: hidden; }
+        
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/AAAB//2Q==");
+            opacity: 0.1; z-index: -2;
+        }
+
+        .frame { position: relative; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        
+        .window {
+            position: relative; width: 90vw; height: 70vh; max-width: 900px; max-height: 600px;
+            border-radius: 15px; overflow: hidden; background: transparent;
+            box-shadow: 0 40px 120px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .scene { position: absolute; top: 0; left: 0; right: 0; bottom: 0; transform-style: preserve-3d; perspective: 800px; }
+        
+        .window::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(100, 120, 140, 0.05); pointer-events: none; z-index: 5; }
+
+        .rain-layer, .petal-layer { 
+            position: absolute; top: 0; width: 50%; height: 100%; 
+            overflow: hidden; pointer-events: none; z-index: 10; 
+        }
+        .rain-layer { left: 0; }
+        .petal-layer { right: 0; }
+
+        .drop, .petal {
+            position: absolute; left: 0; width: 2px; height: 60px; 
+            opacity: 0.8; pointer-events: none;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        .drop { 
+            background: linear-gradient(to bottom, rgba(173, 216, 230, 0.9), transparent);
+            border-radius: 50% 50% 0 0; filter: blur(0.5px);
+        }
+
+        .petal {
+            width: 20px; height: 20px;
+            background: radial-gradient(circle at 30% 30%, #FF8C00, #8B4513);
+            border-radius: 40% 60% 0 40%;
+            filter: drop-shadow(0 0 2px rgba(255, 179, 186, 0.5));
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-120px); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(130vh); opacity: 0; }
+        }
+
+        /* --- ТЕКСТ: Новые строки и шрифты --- */
+        .center-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; pointer-events: none; z-index: 50; color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        
+        /* Основной заголовок */
+        h1 {
+            font-family: 'Marck Script', cursive; 
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            line-height: 1.1; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 5px;
+            font-weight: 400;
+            
+            background: linear-gradient(135deg, #FFD700, #FFA07A, #FF5733);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 40px rgba(255, 100, 100, 0.4));
+            animation: glow-pulse 3s ease-in-out infinite;
+        }
+        
+        /* Подписи снизу */
+        .subtitle-1, .subtitle-2, .subtitle-3 {
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1.3rem, 3.5vw, 2rem);
+            font-style: italic; 
+            color: #FFFAF0; 
+            letter-spacing: 1px; 
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-top: 10px;
+        }
+        
+        @keyframes glow-pulse { 
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)); } 
+            50% { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1)) drop-shadow(0 0 50px rgba(255, 100, 100, 0.6)); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="frame">
+        <div class="window">
+            <div class="scene">
+                <div class="rain-layer" id="rain"></div>
+                <div class="petal-layer" id="petals"></div>
+            </div>
+        </div>
+        
+        <!-- Текст с новыми строками -->
+        <div class="center-text">
+            <h1>Я люблю тебя, Алёна</h1>
+            <div class="subtitle-1">Ты мой апрель</div>
+            <div class="subtitle-2">Ты моя бесценная</div>
+            <div class="subtitle-3">Ты моё сокровище</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rainLayer = document.getElementById('rain');
+            const petalLayer = document.getElementById('petals');
+            const windowEl = document.querySelector('.window');
+            const scene = document.querySelector('.scene');
+
+            for (let i = 0; i < 80; i++) {
+                const drop = document.createElement('div');
+                drop.classList.add('drop');
+                
+                const startLeft = Math.random() * 100;
+                const startDelay = Math.random() * 5;
+                const duration = Math.random() * 2 + 2;
+
+                drop.style.left = startLeft + '%';
+                drop.style.animationDelay = startDelay + 's';
+                drop.style.animationDuration = duration + 's';
+                
+                rainLayer.appendChild(drop);
+            }
+
+            for (let i = 0; i < 60; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                
+                const startLeft = Math.random() * 100;
+                const startTop = Math.random() * 100 - 50;
+                const startDelay = Math.random() * 5;
+                const duration = Math.random() * 4 + 6;
+                const tilt = Math.random() * 360;
+                const size = Math.random() * 10 + 15;
+
+                petal.style.left = startLeft + '%';
+                petal.style.top = startTop + '%';
+                petal.style.width = size + 'px';
+                petal.style.height = size + 'px';
+                petal.style.animationDelay = startDelay + 's';
+                petal.style.animationDuration = duration + 's';
+                petal.style.transform = `rotate(${tilt}deg)`;
+                
+                petalLayer.appendChild(petal);
+            }
+
+            windowEl.addEventListener('mousemove', (e) => {
+                const rect = windowEl.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                const rotateX = (y - 0.5) * 8;
+                const rotateY = (x - 0.5) * -8;
+                scene.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            windowEl.addEventListener('mouseleave', () => {
+                scene.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
